@@ -12,7 +12,6 @@ import useStyles from "./styles";
 
 const Cartitem = ({ item }) => {
   const classes = useStyles();
-  console.log(item);
 
   return (
     <Card>
