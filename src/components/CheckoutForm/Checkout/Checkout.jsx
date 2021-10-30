@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { commerce } from "../../../lib/commerce";
 import {
   Paper,
   Stepper,
@@ -15,9 +16,23 @@ import useStyles from "./styles";
 
 const steps = ["Shipping address", "Payment details"];
 
-const Checkout = () => {
+const Checkout = ({ cart }) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
+  const [checkoutToken, setCheckoutToken] = useState(null);
+
+  useEffect(() => {
+    const generateToken = async () => {
+      try {
+        const token = await commerce.checkout.generateToken(cart.id, {
+          type: "cart",
+        });
+        console.log(token);
+        setCheckoutToken(token);
+      } catch (error) {}
+    };
+    generateToken();
+  }, []);
 
   const Confirmation = () => <div>confirmation</div>;
 
