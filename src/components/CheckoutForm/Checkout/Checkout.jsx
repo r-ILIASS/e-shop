@@ -19,7 +19,8 @@ const steps = ["Shipping address", "Payment details"];
 const Checkout = ({ cart }) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
-  const [checkoutToken, setCheckoutToken] = useState(null);
+  const [checkoutToken, setCheckoutToken] = useState("");
+  console.log({ cart });
 
   useEffect(() => {
     const generateToken = async () => {
@@ -34,9 +35,16 @@ const Checkout = ({ cart }) => {
     generateToken();
   }, []);
 
+  console.log(checkoutToken);
+
   const Confirmation = () => <div>confirmation</div>;
 
-  const Form = () => (activeStep === 0 ? <AddressForm /> : <PaymentForm />);
+  const Form = () =>
+    activeStep === 0 ? (
+      <AddressForm checkoutToken={checkoutToken} />
+    ) : (
+      <PaymentForm />
+    );
 
   return (
     <>

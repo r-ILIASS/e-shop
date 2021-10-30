@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import {
   InputLabel,
@@ -12,7 +12,8 @@ import { commerce } from "../../lib/commerce";
 
 import FormInput from "./FormInput";
 
-const AddressForm = () => {
+const AddressForm = ({ checkoutToken }) => {
+  console.log(checkoutToken.id);
   const [shippingCountries, setShippingCountries] = useState([]);
   const [shippingCountry, setShippingCountry] = useState("");
   const [shippingSubdivisions, setShippingSubdivisions] = useState([]);
@@ -20,13 +21,21 @@ const AddressForm = () => {
   const [shippingOptions, setShippingOptions] = useState([]);
   const [shippingOption, setShippingOption] = useState("");
   const methods = useForm();
-
   const fetchShippingCountries = async (checkoutTokenId) => {
-    const { countries } = await commerce.services.localeListShippingCountries(
-      checkoutTokenId
-    );
-    setShippingCountries(countries);
+    try {
+      const { countries } = await commerce.services.localeListShippingCountries(
+        checkoutTokenId
+      );
+      console.log(countries);
+      setShippingCountries(countries);
+    } catch (error) {
+      console.log(" fetch countries error is ", error);
+    }
   };
+
+  useEffect(() => {
+    fetchShippingCountries(checkoutToken.id);
+  }, []);
 
   return (
     <>
