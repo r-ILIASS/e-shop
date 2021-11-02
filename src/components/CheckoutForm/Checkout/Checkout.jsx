@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Link, useHistory } from 'react-router-dom';
 import { commerce } from "../../../lib/commerce";
 import {
+  CssBaseline,
   Paper,
   Stepper,
   Step,
@@ -16,11 +18,13 @@ import useStyles from "./styles";
 
 const steps = ["Shipping address", "Payment details"];
 
-const Checkout = ({ cart }) => {
+const Checkout = ({ cart, order, onCaptureCheckout, error }) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [checkoutToken, setCheckoutToken] = useState(null);
   const [shippingData, setShippingData] = useState({});
+  const [isMock, setIsMock] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     const generateToken = async () => {
@@ -30,7 +34,9 @@ const Checkout = ({ cart }) => {
         });
         console.log(token);
         setCheckoutToken(token);
-      } catch (error) { }
+      } catch (error) {
+        history.push('/');
+      }
     };
     generateToken();
   }, [cart]);
@@ -43,17 +49,62 @@ const Checkout = ({ cart }) => {
     nextStep();
   };
 
-  const Confirmation = () => <div>confirmation</div>;
+  const timeout = () => {
+    setTimeout(() => {
+      setIsMock(true)
+    }, 3000)
+  }
+
+  let Confirmation = () => order.customer ? (
+    <>
+      <div>
+        <Typography variant="h5">
+          Thank you for you purchase, {order.customer.firstname} {order.customer.lastname}
+        </Typography>
+        <Divider className={classes.divider} />
+        <Typography variant="subtitle2">Order ref: {order.customer.reference}</Typography>
+        <br />
+        <Button component={Link} to="/" variant="outlined" type="button">Back To HomePage</Button>
+      </div>
+    </>
+  ) : isMock ? (
+    <>
+      <div>
+        <Typography variant="h5">
+          Thank you for you purchase, Mr Test.
+        </Typography>
+        <Divider className={classes.divider} />
+        <Typography variant="subtitle2">Order ref: 424423... it doesn't really matter!</Typography>
+        <br />
+        <Button component={Link} to="/" variant="outlined" type="button">Back To HomePage</Button>
+      </div>
+    </>
+
+  ) : (
+    <div className={classes.spinner}>
+      <CircularProgress />
+    </div>
+  )
+
+  if (error) {
+    <>
+      <Typography variant="h5">Error: {error}</Typography>
+      <br />
+
+      <Button component={Link} to="/" variant="outlined" type="button">Back To HomePage</Button>
+    </>
+  }
 
   const Form = () =>
     activeStep === 0 ? (
       <AddressForm checkoutToken={checkoutToken} next={next} />
     ) : (
-      <PaymentForm checkoutToken={checkoutToken} shippingData={shippingData} backStep={backStep} />
+      <PaymentForm checkoutToken={checkoutToken} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} nextStep={nextStep} backStep={backStep} timeout={timeout} />
     );
 
   return (
     <>
+      <CssBaseline />
       <div className={classes.toolbar} />
       <main className={classes.layout}>
         <Paper className={classes.paper}>
