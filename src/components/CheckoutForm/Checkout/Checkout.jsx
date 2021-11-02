@@ -30,7 +30,7 @@ const Checkout = ({ cart }) => {
         });
         console.log(token);
         setCheckoutToken(token);
-      } catch (error) {}
+      } catch (error) { }
     };
     generateToken();
   }, [cart]);
@@ -49,7 +49,7 @@ const Checkout = ({ cart }) => {
     activeStep === 0 ? (
       <AddressForm checkoutToken={checkoutToken} next={next} />
     ) : (
-      <PaymentForm />
+      <PaymentForm checkoutToken={checkoutToken} shippingData={shippingData} backStep={backStep} />
     );
 
   return (
