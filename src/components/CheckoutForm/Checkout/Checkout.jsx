@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory } from "react-router-dom";
 import { commerce } from "../../../lib/commerce";
 import {
   CssBaseline,
@@ -32,10 +32,9 @@ const Checkout = ({ cart, order, onCaptureCheckout, error }) => {
         const token = await commerce.checkout.generateToken(cart.id, {
           type: "cart",
         });
-        console.log(token);
         setCheckoutToken(token);
       } catch (error) {
-        history.push('/');
+        history.push("/");
       }
     };
     generateToken();
@@ -51,55 +50,69 @@ const Checkout = ({ cart, order, onCaptureCheckout, error }) => {
 
   const timeout = () => {
     setTimeout(() => {
-      setIsMock(true)
-    }, 3000)
-  }
+      setIsMock(true);
+    }, 3000);
+  };
 
-  let Confirmation = () => order.customer ? (
-    <>
-      <div>
-        <Typography variant="h5">
-          Thank you for you purchase, {order.customer.firstname} {order.customer.lastname}
-        </Typography>
-        <Divider className={classes.divider} />
-        <Typography variant="subtitle2">Order ref: {order.customer.reference}</Typography>
-        <br />
-        <Button component={Link} to="/" variant="outlined" type="button">Back To HomePage</Button>
+  let Confirmation = () =>
+    order.customer ? (
+      <>
+        <div>
+          <Typography variant="h5">
+            Thank you for you purchase, {order.customer.firstname}{" "}
+            {order.customer.lastname}
+          </Typography>
+          <Divider className={classes.divider} />
+          <Typography variant="subtitle2">
+            Order ref: {order.customer.reference}
+          </Typography>
+          <br />
+          <Button component={Link} to="/" variant="outlined" type="button">
+            Back To HomePage
+          </Button>
+        </div>
+      </>
+    ) : isMock ? (
+      <>
+        <div>
+          <Typography variant="h5">Thank you for you purchase, HR.</Typography>
+          <Divider className={classes.divider} />
+          <Typography variant="subtitle2">Order ref: 424423... </Typography>
+          <br />
+          <Button component={Link} to="/" variant="outlined" type="button">
+            Back To HomePage
+          </Button>
+        </div>
+      </>
+    ) : (
+      <div className={classes.spinner}>
+        <CircularProgress />
       </div>
-    </>
-  ) : isMock ? (
-    <>
-      <div>
-        <Typography variant="h5">
-          Thank you for you purchase, Mr Test.
-        </Typography>
-        <Divider className={classes.divider} />
-        <Typography variant="subtitle2">Order ref: 424423... it doesn't really matter!</Typography>
-        <br />
-        <Button component={Link} to="/" variant="outlined" type="button">Back To HomePage</Button>
-      </div>
-    </>
-
-  ) : (
-    <div className={classes.spinner}>
-      <CircularProgress />
-    </div>
-  )
+    );
 
   if (error) {
     <>
       <Typography variant="h5">Error: {error}</Typography>
       <br />
 
-      <Button component={Link} to="/" variant="outlined" type="button">Back To HomePage</Button>
-    </>
+      <Button component={Link} to="/" variant="outlined" type="button">
+        Back To HomePage
+      </Button>
+    </>;
   }
 
   const Form = () =>
     activeStep === 0 ? (
       <AddressForm checkoutToken={checkoutToken} next={next} />
     ) : (
-      <PaymentForm checkoutToken={checkoutToken} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} nextStep={nextStep} backStep={backStep} timeout={timeout} />
+      <PaymentForm
+        checkoutToken={checkoutToken}
+        shippingData={shippingData}
+        onCaptureCheckout={onCaptureCheckout}
+        nextStep={nextStep}
+        backStep={backStep}
+        timeout={timeout}
+      />
     );
 
   return (
